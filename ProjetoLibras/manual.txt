@@ -1,0 +1,28 @@
+Como usar
+1. Coletar dados:
+bash
+Copiar código
+python coleta_dados.py
+Mostre o gesto de uma letra (ex: "A").
+
+Pressione a tecla A no teclado.
+
+Pressione S para salvar.
+
+Faça isso para várias letras e amostras (ideal: 30+ por letra).
+
+Pressione ESC para sair.
+
+2. Treinar modelo:
+bash
+Copiar código
+python treino_modelo.py
+Isso criará o arquivo modelo_letras_libras.joblib.
+
+3. Reconhecer em tempo real:
+bash
+Copiar código
+python reconhecimento.py
+Aponte a mão para a câmera.
+
+O modelo tentará prever qual letra está sendo mostrada.

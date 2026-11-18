@@ -8,8 +8,8 @@ Reconhece letras do alfabeto manual de Libras (Língua Brasileira de Sinais) em 
 ProjetoLibras/
 ├── coleta_dados.py      # 1. coleta amostras pela webcam
 ├── treino_modelo.py     # 2. treina o modelo
-├── reconhecimento.py    # 3. reconhece em tempo real
-├── utils.py             # normalização dos pontos e caminhos (usado pelos 3)
+├── reconhecimento.py    # 3. reconhece em tempo real e monta palavras
+├── utils.py             # normalização dos pontos, gestos e caminhos (usado pelos 3)
 └── dataset_libras/
     └── dados.csv        # amostras coletadas (rótulo + 63 valores normalizados)
 requirements.txt
@@ -57,18 +57,40 @@ python ProjetoLibras/treino_modelo.py
 
 Imprime a acurácia e o `classification_report` num conjunto de teste e avisa sobre letras com menos de 30 amostras. Gera `ProjetoLibras/modelo_letras_libras.joblib`.
 
-### 3. Reconhecer
+### 3. Reconhecer e montar palavras
 
 ```bash
 python ProjetoLibras/reconhecimento.py
 ```
 
-Mostra a letra prevista e a confiança. Se a confiança for menor que 60%, mostra `?`. ESC sai.
+No topo aparece a letra prevista e a confiança (`?` se a confiança for menor que 60%). A faixa de baixo mostra o gesto detectado (com uma barra de progresso), a letra candidata e o texto montado.
+
+Para escrever:
+
+1. Faça a letra e segure. Quando a mesma letra é prevista com confiança de 60% ou mais por ~0,5 s, ela vira a **candidata**, e continua candidata mesmo depois que você muda a mão.
+2. Faça o gesto **CONFIRMAR** e segure por ~0,4 s: a candidata entra no texto e é limpa. Para repetir uma letra, faça-a de novo e confirme de novo.
+3. Para separar palavras, faça o gesto **ESPAÇO** e segure a mão parada por ~2 s. Não entra espaço duplicado nem no começo do texto. O espaço também descarta a candidata, para não sobrar uma letra que o modelo tenha visto na mão aberta.
+
+| Gesto | Como fazer | Tempo |
+|---|---|---|
+| CONFIRMAR | Punho fechado apontando para baixo: pontas dos 4 dedos abaixo do pulso na imagem e dedos dobrados. | ~0,4 s |
+| ESPAÇO | Mão aberta com os 5 dedos esticados e apontando para cima, parada. Se a mão se mexer, a contagem recomeça. | ~2 s |
+
+Os gestos são reconhecidos por regras sobre os pontos da mão (`gesto_confirmar` e `gesto_mao_aberta` em `utils.py`), não pelo modelo. Enquanto o CONFIRMAR está ativo, o modelo não é consultado, para o gesto não virar uma letra.
+
+Teclas:
+
+- **BACKSPACE**: apaga a última letra.
+- **C**: limpa o texto e a candidata.
+- **ESC**: sai e imprime o texto montado no terminal.
+
+Os tempos e o limiar são constantes no topo do `reconhecimento.py`: `LIMIAR`, `TEMPO_CANDIDATA`, `TEMPO_CONFIRMAR`, `TEMPO_ESPACO` e `TOLERANCIA_MOVIMENTO` (quanto a palma pode se mover, em tamanhos de palma, sem recomeçar a contagem do ESPAÇO).
 
 ## Limitações
 
 - Funciona com **um único frame**, então letras que dependem de **movimento** (J, H, K, X, Z e Ç, conforme o alfabeto manual usado) não são reconhecidas de forma confiável.
 - Só detecta uma mão por vez.
+- Os gestos CONFIRMAR e ESPAÇO dependem da orientação da mão na imagem (para baixo e para cima). Uma letra que seja um punho fechado para baixo nunca será prevista, e uma letra com os 5 dedos esticados para cima pode inserir um espaço se for segurada por 2 s.
 - O desempenho depende da qualidade e da variedade dos dados que você coletar; o modelo é treinado por pessoa/ambiente.
 - Os dados coletados com versões anteriores (pontos sem normalização) são incompatíveis e devem ser recoletados.
 

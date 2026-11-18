@@ -9,7 +9,7 @@ from utils import MODELO_PATH, extrair_features
 LIMIAR = 0.6
 
 if not MODELO_PATH.exists():
-    sys.exit(f"[✘] Modelo não encontrado em '{MODELO_PATH}'.\n"
+    sys.exit(f"[ERRO] Modelo não encontrado em '{MODELO_PATH}'.\n"
              "Gere-o assim: 1) python coleta_dados.py  2) python treino_modelo.py")
 
 modelo = joblib.load(MODELO_PATH)

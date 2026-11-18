@@ -13,12 +13,12 @@ MIN_AMOSTRAS = 30
 
 def main(csv_path=CSV_PATH):
     if not csv_path.exists() or csv_path.stat().st_size == 0:
-        sys.exit(f"[✘] Nenhum dado encontrado em '{csv_path}'. "
+        sys.exit(f"[ERRO] Nenhum dado encontrado em '{csv_path}'. "
                  "Rode 'python coleta_dados.py' para coletar amostras primeiro.")
 
     df = pd.read_csv(csv_path, header=None)
     if df.empty:
-        sys.exit(f"[✘] O arquivo '{csv_path}' está vazio. Colete amostras com 'python coleta_dados.py'.")
+        sys.exit(f"[ERRO] O arquivo '{csv_path}' está vazio. Colete amostras com 'python coleta_dados.py'.")
 
     y = df[0]
     X = df.drop(columns=0)
@@ -30,7 +30,7 @@ def main(csv_path=CSV_PATH):
             print(f"[!] Letra '{letra}' tem só {n} amostras (recomendado: {MIN_AMOSTRAS}+).")
 
     if len(contagem) < 2:
-        sys.exit("[✘] São necessárias pelo menos 2 letras diferentes para treinar.")
+        sys.exit("[ERRO] São necessárias pelo menos 2 letras diferentes para treinar.")
 
     # Divisão estratificada só se toda letra tiver amostras suficientes
     if contagem.min() >= 2 and len(df) * 0.2 >= len(contagem):
@@ -48,7 +48,7 @@ def main(csv_path=CSV_PATH):
     clf = RandomForestClassifier(random_state=42)
     clf.fit(X, y)
     joblib.dump(clf, MODELO_PATH)
-    print(f"[✔] Modelo treinado e salvo em '{MODELO_PATH}'.")
+    print(f"[OK] Modelo treinado e salvo em '{MODELO_PATH}'.")
 
 
 if __name__ == "__main__":

@@ -60,7 +60,7 @@ while True:
             with open(CSV_PATH, "a", newline="") as f:
                 csv.writer(f).writerow([letra_atual] + pontos)
             contagem[letra_atual] += 1
-            print(f"[✔] Letra '{letra_atual}' salva ({contagem[letra_atual]} amostras).")
+            print(f"[OK] Letra '{letra_atual}' salva ({contagem[letra_atual]} amostras).")
         elif not letra_atual:
             print("Escolha uma letra antes de salvar.")
         else:

@@ -4,6 +4,7 @@ import numpy as np
 
 PASTA = Path(__file__).parent
 CSV_PATH = PASTA / "dataset_libras" / "dados.csv"
+EXTERNO_PATH = PASTA / "dataset_libras" / "externo_univali.csv"
 MODELO_PATH = PASTA / "modelo_letras_libras.joblib"
 
 # Índices dos landmarks do MediaPipe Hands
